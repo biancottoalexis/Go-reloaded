@@ -7,6 +7,7 @@ import (
 
 	"go-reloaded/articles"
 	"go-reloaded/commandes"
+	"go-reloaded/ponctuation"
 )
 
 func main() {
@@ -25,6 +26,7 @@ func main() {
 
 	mots = commandes.Appliquer(mots)
 	mots = articles.Corriger(mots)
+	mots = ponctuation.Corriger(mots)
 
 	resultat := strings.Join(mots, " ")
 	err = os.WriteFile(os.Args[2], []byte(resultat), 0644)
