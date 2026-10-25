@@ -17,23 +17,38 @@ func main() {
 		os.Exit(1)
 	}
 
-	data, err := os.ReadFile(os.Args[1])
+	fichierEntree := os.Args[1]
+	fichierSortie := os.Args[2]
+
+	contenu, err := os.ReadFile(fichierEntree)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("erreur : impossible de lire", fichierEntree)
 		os.Exit(1)
 	}
 
-	mots := strings.Fields(string(data))
+	texte := string(contenu)
+	lignes := strings.Split(texte, "\n")
+
+	for i := 0; i < len(lignes); i++ {
+		lignes[i] = corrigerLigne(lignes[i])
+	}
+
+	resultat := strings.Join(lignes, "\n")
+
+	err = os.WriteFile(fichierSortie, []byte(resultat), 0644)
+	if err != nil {
+		fmt.Println("erreur : impossible d'écrire", fichierSortie)
+		os.Exit(1)
+	}
+}
+
+func corrigerLigne(ligne string) string {
+	mots := strings.Fields(ligne)
 
 	mots = commandes.Appliquer(mots)
 	mots = articles.Corriger(mots)
 	mots = ponctuation.Corriger(mots)
 	mots = apostrophes.Corriger(mots)
 
-	resultat := strings.Join(mots, " ")
-	err = os.WriteFile(os.Args[2], []byte(resultat), 0644)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	return strings.Join(mots, " ")
 }
