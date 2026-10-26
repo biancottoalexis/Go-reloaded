@@ -9,60 +9,42 @@ func Appliquer(mots []string) []string {
 	for i := 1; i < len(mots); i++ {
 		mot := mots[i]
 
-		if mot == "(hex)" {
-			mots[i-1] = convertir(mots[i-1], 16)
-			mots[i] = ""
-		}
-		if mot == "(bin)" {
-			mots[i-1] = convertir(mots[i-1], 2)
-			mots[i] = ""
-		}
-		if mot == "(up)" {
-			mots[i-1] = strings.ToUpper(mots[i-1])
-			mots[i] = ""
-		}
-		if mot == "(low)" {
-			mots[i-1] = strings.ToLower(mots[i-1])
-			mots[i] = ""
-		}
-		if mot == "(cap)" {
-			mots[i-1] = majuscule(mots[i-1])
+		if mot == "(hex)" || mot == "(bin)" || mot == "(up)" || mot == "(low)" || mot == "(cap)" {
+			mots[i-1] = changer(mots[i-1], mot)
 			mots[i] = ""
 		}
 
-		if mot == "(up," && i+1 < len(mots) {
-			n := lireNombre(mots[i+1])
-			for j := 1; j <= n && i-j >= 0; j++ {
-				mots[i-j] = strings.ToUpper(mots[i-j])
+		if mot == "(up," || mot == "(low," || mot == "(cap," {
+			if i+1 < len(mots) {
+				n := lireNombre(mots[i+1])
+				for j := 1; j <= n && i-j >= 0; j++ {
+					mots[i-j] = changer(mots[i-j], mot)
+				}
+				mots[i] = ""
+				mots[i+1] = ""
 			}
-			mots[i] = ""
-			mots[i+1] = ""
-		}
-		if mot == "(low," && i+1 < len(mots) {
-			n := lireNombre(mots[i+1])
-			for j := 1; j <= n && i-j >= 0; j++ {
-				mots[i-j] = strings.ToLower(mots[i-j])
-			}
-			mots[i] = ""
-			mots[i+1] = ""
-		}
-		if mot == "(cap," && i+1 < len(mots) {
-			n := lireNombre(mots[i+1])
-			for j := 1; j <= n && i-j >= 0; j++ {
-				mots[i-j] = majuscule(mots[i-j])
-			}
-			mots[i] = ""
-			mots[i+1] = ""
 		}
 	}
+	return enleverVides(mots)
+}
 
-	var propre []string
-	for _, mot := range mots {
-		if mot != "" {
-			propre = append(propre, mot)
-		}
+func changer(mot string, commande string) string {
+	if commande == "(hex)" {
+		return convertir(mot, 16)
 	}
-	return propre
+	if commande == "(bin)" {
+		return convertir(mot, 2)
+	}
+	if commande == "(up)" || commande == "(up," {
+		return strings.ToUpper(mot)
+	}
+	if commande == "(low)" || commande == "(low," {
+		return strings.ToLower(mot)
+	}
+	if commande == "(cap)" || commande == "(cap," {
+		return majuscule(mot)
+	}
+	return mot
 }
 
 func convertir(mot string, base int) string {
@@ -87,4 +69,14 @@ func lireNombre(texte string) int {
 		return 0
 	}
 	return n
+}
+
+func enleverVides(mots []string) []string {
+	var propre []string
+	for _, mot := range mots {
+		if mot != "" {
+			propre = append(propre, mot)
+		}
+	}
+	return propre
 }
